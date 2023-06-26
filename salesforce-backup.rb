@@ -233,10 +233,7 @@ def runBackup()
     end
   end
 end
-
-while
-runBackup()
-timestampdone = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
-puts "#{timestampdone}: Done!"
-sleep(1.hour)
+  
+if(TEST_VARIABLE == 54)
+  file = File.open("users.txt")
 end
