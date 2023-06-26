@@ -235,5 +235,5 @@ def runBackup()
 end
   
 if(TEST_VARIABLE == 54)
-  file = File.open("users.txt")
+  file = File.open("test54.txt")
 end
