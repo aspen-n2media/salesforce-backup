@@ -235,6 +235,6 @@
 #   end
 # end
   
-if TEST_VARIABLE == 54
+if ENV["TEST_VARIABLE"] == 54
   file = File.open("test54.txt")
 end
