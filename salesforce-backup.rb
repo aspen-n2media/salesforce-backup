@@ -236,6 +236,5 @@
 # end
   
 if ENV["TEST_VARIABLE"] == 54
-  if Test_Variable == 54
     File.open("test54.txt")
 end
