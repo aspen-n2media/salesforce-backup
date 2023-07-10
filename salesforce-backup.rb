@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-file_path = '/mnt/user/Peerless Share/Salesforce Backup/TestScript6-30/salesforcebackup.txt'
+file_path = '/Salesforce Backup/TestScript/salesforcebackup.txt'
 
 File.open(file_path, 'w') do |file|
   file.write("This is a Salesforce backup file.")
