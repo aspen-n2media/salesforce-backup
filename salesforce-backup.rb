@@ -42,7 +42,7 @@ end
 
 ### Helpers ###
 
-def http(host, port = 443)
+def http(host = ENV['SALESFORCE_SITE'], port = 443)
   h = Net::HTTP.new(host, port)
   h.use_ssl = true
   h
@@ -71,7 +71,7 @@ end
 
 def login
   puts "Logging in..."
-  path = '/services/Soap/u/28.0'
+  path = '/services/Soap/u/58.0'
 
   pwd_token_encoded = "#{ENV['SALESFORCE_USER_PASSWORD']}&#{ENV['SALESFORCE_SECURITY_TOKEN']}"
   pwd_token_encoded = pwd_token_encoded.gsub(/&(?!amp;)/,'&amp;')
