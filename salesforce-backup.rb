@@ -5,7 +5,6 @@ require 'net/https'
 require 'rexml/document'
 require 'date'
 require 'net/smtp'
-require 'yaml'
 require 'fileutils'
 
 include REXML
@@ -43,10 +42,10 @@ end
 
 ### Helpers ###
 
-def http(host=@sales_force_site, port=443)
-    h = Net::HTTP.new(host, port)
-    h.use_ssl = true
-    h
+def http(host, port = 443)
+  h = Net::HTTP.new(host, port)
+  h.use_ssl = true
+  h
 end
 
 def headers(login)
@@ -57,7 +56,7 @@ def headers(login)
 end
 
 def file_name(url=nil)
-  datestamp = Date::today.strftime('%Y-%m-%d')
+  datestamp = Date.today.strftime('%Y-%m-%d')
   uid_string = url ? "-#{/.*fileName=(.*)\.ZIP.*/.match(url)[1]}" : ''
   filenumber = uid_string[(22 - uid_string.size)]
   fileid = url ? "-#{/.*id=(.*).match(url)[2]}" : ''
@@ -74,16 +73,17 @@ def login
   puts "Logging in..."
   path = '/services/Soap/u/28.0'
 
-  pwd_token_encoded = @sales_force_passwd_and_sec_token.gsub(/&(?!amp;)/,'&amp;')
+  pwd_token_encoded = "#{ENV['SALESFORCE_USER_PASSWORD']}&#{ENV['SALESFORCE_SECURITY_TOKEN']}"
+  pwd_token_encoded = pwd_token_encoded.gsub(/&(?!amp;)/,'&amp;')
 
-  inital_data = <<-EOF
+  initial_data = <<-EOF
 <?xml version="1.0" encoding="utf-8" ?>
 <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
   <env:Body>
     <n1:login xmlns:n1="urn:partner.soap.sforce.com">
-      <n1:username>#{@sales_force_user_name}</n1:username>
+      <n1:username>#{ENV['SALESFORCE_USERNAME']}</n1:username>
       <n1:password>#{pwd_token_encoded}</n1:password>
     </n1:login>
   </env:Body>
@@ -95,7 +95,7 @@ def login
     'SOAPAction' => 'login'
   }
 
-  resp = http('login.salesforce.com').post(path, inital_data, initial_headers)
+  resp = http('login.salesforce.com').post(path, initial_data, initial_headers)
 
   if resp.code == '200'
     xmldoc = Document.new(resp.body)
@@ -125,7 +125,7 @@ def download_file(login, url, expected_size)
   size = 0
   fn = file_name(url)
   puts "Downloading #{fn}..."
-  f = open("#{@data_directory}/#{fn}", "wb")
+  f = open("#{ENV['DATA_DIRECTORY']}/#{fn}", "wb")
   begin
     http.request_get(url, headers(login)) do |resp|
       resp.read_body do |segment|
@@ -175,69 +175,64 @@ def email_failure(url, error_msg)
 end
 
 def email(subject, data)
-message = <<END
-From: Admin <#{@email_address_from}>
-To: Admin <#{@email_address_to}>
+  message = <<END
+From: Admin <#{ENV['EMAIL_ADDRESS_FROM']}>
+To: Admin <#{ENV['EMAIL_ADDRESS_TO']}>
 Subject: #{subject}
 
 #{data}
 END
-  Net::SMTP.start(@smtp_host) do |smtp|
-    smtp.send_message message, @email_address_from, @email_address_to
+  Net::SMTP.start(ENV['SMTP_HOST']) do |smtp|
+    smtp.send_message message, ENV['EMAIL_ADDRESS_FROM'], ENV['EMAIL_ADDRESS_TO']
   end
 end
 
-def runBackup()
-  config_file_path = File.join(File.dirname(__FILE__), 'config.yml')
-  config_hash = YAML.load_file(config_file_path)
-  config_hash.each { |name, value| instance_variable_set("@#{name}", value) }
-  result = login
-  timestampstart  = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
-  urls = download_index(result).split("\n")
-  puts "#{timestampstart}: Started!"
-  puts "  All urls:"
-  puts urls
-  puts ''
-
-  unless File.directory?(@data_directory)
-    FileUtils.mkdir_p(@data_directory)
-  end
-
-  urls.each do |url|
-    fn = file_name(url)
-    file_path = "#{@data_directory}/#{fn}"
-    retry_count = 0
-    begin
-      puts "Working on: #{url}"
-      expected_size = get_download_size(result, url)
-      puts "Expected size: #{expected_size}"
-      fs = File.size?(file_path)
-      while (Dir.entries(@data_directory))
-
-
-
-      if fs && fs == expected_size
-        puts "File #{fn} exists and is the right size. Skipping."
-      else
-        download_file(result, url, expected_size)
-      ##  email_success(file_path, expected_size)
-      end
-    rescue Exception => e
-      if retry_count < 5
-        retry_count += 1
-        puts "Error: #{e}"
-        puts "Retrying (retry_count of 5)..."
-        retry
-      else
-        email_failure(url, e.to_s)
+def run_backup
+    result = login
+    timestamp_start = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
+    urls = download_index(result).split("\n")
+    puts "#{timestamp_start}: Started!"
+    puts "  All URLs:"
+    puts urls
+    puts ''
+  
+    unless File.directory?(ENV['DATA_DIRECTORY'])
+      FileUtils.mkdir_p(ENV['DATA_DIRECTORY'])
+    end
+  
+    urls.each do |url|
+      fn = file_name(url)
+      file_path = "#{ENV['DATA_DIRECTORY']}/#{fn}"
+      retry_count = 0
+      begin
+        puts "Working on: #{url}"
+        expected_size = get_download_size(result, url)
+        puts "Expected size: #{expected_size}"
+        fs = File.size?(file_path)
+  
+        if fs && fs == expected_size
+          puts "File #{fn} exists and is the right size. Skipping."
+        else
+          download_file(result, url, expected_size)
+          ## email_success(file_path, expected_size)
+        end
+      rescue Exception => e
+        if retry_count < 5
+          retry_count += 1
+          puts "Error: #{e}"
+          puts "Retrying (retry_count of 5)..."
+          retry
+        else
+          email_failure(url, e.to_s)
+        end
       end
     end
   end
-end
-
-while
-runBackup()
-timestampdone = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
-puts "#{timestampdone}: Done!"
-sleep(1.hour)
-end
+  
+  while true
+    run_backup
+    timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
+    puts "#{timestamp_done}: Done!"
+    sleep(1.hour)
+  end
+  
