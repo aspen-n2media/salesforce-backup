@@ -1,5 +1,11 @@
 #!/usr/bin/ruby
 
+file_path = '/mnt/user/Peerless Share/Salesforce Backup/TestScript6-30/salesforcebackup.txt'
+
+File.open(file_path, 'w') do |file|
+  file.write("This is a Salesforce backup file.")
+end
+
 # require 'net/http'
 # require 'net/https'
 # require 'rexml/document'

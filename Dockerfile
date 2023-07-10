@@ -1,4 +1,4 @@
 FROM ruby:latest
-RUN mkdir -p /config
+WORKDIR /backup
 COPY salesforce-backup.rb .
 ENTRYPOINT ["ruby", "salesforce-backup.rb"]
