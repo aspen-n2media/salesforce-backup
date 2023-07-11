@@ -71,6 +71,9 @@ def login
   pwd_token_encoded = "#{ENV['SALESFORCE_USER_PASSWORD']}&#{ENV['SALESFORCE_SECURITY_TOKEN']}"
   pwd_token_encoded = pwd_token_encoded.gsub(/&(?!amp;)/,'&amp;')
 
+  puts "<n1:password>#{pwd_token_encoded}</n1:password>"
+  puts "<n1:username>#{ENV['SALESFORCE_USERNAME']}</n1:username>"
+
   initial_data = <<-EOF
 <?xml version="1.0" encoding="utf-8" ?>
 <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -93,9 +96,11 @@ def login
   resp = http('login.salesforce.com').post(path, initial_data, initial_headers)
 
   if resp.code == '200'
+    puts "code 200"
     xmldoc = Document.new(resp.body)
     return Result.new(xmldoc)
   else
+    puts "error"
     raise SfError.new(resp)
   end
 end
