@@ -158,30 +158,30 @@ end
 
 ### Email ###
 
-def email_success(file_name, size)
-  subject = "Salesforce backup successfully downloaded"
-  data = "Salesforce backup saved into #{file_name}, size #{size}"
-  email(subject, data)
-end
+# def email_success(file_name, size)
+#   subject = "Salesforce backup successfully downloaded"
+#   data = "Salesforce backup saved into #{file_name}, size #{size}"
+#   email(subject, data)
+# end
 
-def email_failure(url, error_msg)
-  subject = "Salesforce backup download failed"
-  data = "Failed to download #{url}. #{error_msg}"
-  email(subject, data)
-end
+# def email_failure(url, error_msg)
+#   subject = "Salesforce backup download failed"
+#   data = "Failed to download #{url}. #{error_msg}"
+#   email(subject, data)
+# end
 
-def email(subject, data)
-  message = <<END
-From: Admin <#{ENV['EMAIL_ADDRESS_FROM']}>
-To: Admin <#{ENV['EMAIL_ADDRESS_TO']}>
-Subject: #{subject}
+# def email(subject, data)
+#   message = <<END
+# From: Admin <#{ENV['EMAIL_ADDRESS_FROM']}>
+# To: Admin <#{ENV['EMAIL_ADDRESS_TO']}>
+# Subject: #{subject}
 
-#{data}
-END
-  Net::SMTP.start(ENV['SMTP_HOST']) do |smtp|
-    smtp.send_message message, ENV['EMAIL_ADDRESS_FROM'], ENV['EMAIL_ADDRESS_TO']
-  end
-end
+# #{data}
+# END
+#   Net::SMTP.start(ENV['SMTP_HOST']) do |smtp|
+#     smtp.send_message message, ENV['EMAIL_ADDRESS_FROM'], ENV['EMAIL_ADDRESS_TO']
+#   end
+# end
 
 def run_backup
     result = login
@@ -219,7 +219,7 @@ def run_backup
           puts "Retrying (retry_count of 5)..."
           retry
         else
-          email_failure(url, e.to_s)
+          #email_failure(url, e.to_s)
         end
       end
     end
