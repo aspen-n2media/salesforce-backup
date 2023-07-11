@@ -63,10 +63,6 @@ def file_name(url=nil)
   "#{fileid}-#{uid_string}-#{datestamp}.ZIP"
 end
 
-def progress_percentage(current, total)
-  ((current.to_f/total.to_f)*(100.to_f)).to_i
-end
-
 ### Salesforce interactions ###
 
 def login
