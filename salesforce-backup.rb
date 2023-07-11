@@ -59,8 +59,7 @@ def file_name(url=nil)
   datestamp = Date.today.strftime('%Y-%m-%d')
   uid_string = url ? "-#{/.*fileName=(.*)\.ZIP.*/.match(url)[1]}" : ''
   filenumber = uid_string[(22 - uid_string.size)]
-  fileid = url ? "-#{/.*id=(.*).match(url)[2]}" : ''
-  "#{fileid}-#{uid_string}-#{datestamp}.ZIP"
+  "salesforce-#{uid_string}-#{datestamp}.ZIP"
 end
 
 ### Salesforce interactions ###
