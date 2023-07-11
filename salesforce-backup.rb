@@ -66,7 +66,7 @@ end
 
 def login
   puts "Logging in..."
-  path = '/services/Soap/u/28.0'
+  path = '/services/Soap/u/58.0'
 
   pwd_token_encoded = "#{ENV['SALESFORCE_USER_PASSWORD']}&#{ENV['SALESFORCE_SECURITY_TOKEN']}"
   pwd_token_encoded = pwd_token_encoded.gsub(/&(?!amp;)/,'&amp;')
