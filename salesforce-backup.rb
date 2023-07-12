@@ -70,6 +70,10 @@ def login
 
   pwd_token_encoded = "#{ENV['SALESFORCE_USER_PASSWORD']}#{ENV['SALESFORCE_SECURITY_TOKEN']}"
   pwd_token_encoded = pwd_token_encoded.gsub(/&(?!amp;)/,'&amp;')
+  pwd_token_encoded = pwd_token_encoded.gsub(/</,'&lt;')
+  pwd_token_encoded = pwd_token_encoded.gsub(/>/,'&gt;')
+  pwd_token_encoded = pwd_token_encoded.gsub(/"/,'&quot;')
+  pwd_token_encoded = pwd_token_encoded.gsub(/'/,'&apos;')
 
   puts "<n1:password>#{pwd_token_encoded}</n1:password>"
   puts "<n1:username>#{ENV['SALESFORCE_USERNAME']}</n1:username>"
