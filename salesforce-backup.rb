@@ -237,6 +237,6 @@ def run_backup
     run_backup
     timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     puts "#{timestamp_done}: Done!"
-    sleep(1.hours)
+    sleep(3600) #3600 seconds in an hour
   end
   
