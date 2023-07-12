@@ -234,6 +234,7 @@ def run_backup
   end
   
   while true
+    puts "started"
     run_backup
     timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     puts "#{timestamp_done}: Done!"
