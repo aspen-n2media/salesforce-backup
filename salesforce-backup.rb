@@ -217,8 +217,9 @@ def run_backup
     puts urls
     puts ''
   
-    unless File.directory?(backup_directory)
-      FileUtils.mkdir_p(backup_directory)
+    unless File.directory?("#{backup_directory}/")
+      FileUtils.mkdir_p("#{backup_directory}/")
+      puts 'directory made'
     end
     
     file_path = '/Salesforce Backup/TestScript/testbackupscript.txt'
