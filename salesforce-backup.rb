@@ -55,11 +55,17 @@ def headers(login)
   }
 end
 
+#string file name, "salesforce-uid-date"
 def file_name(url=nil)
   datestamp = Date.today.strftime('%Y-%m-%d')
   uid_string = url ? "-#{/.*fileName=(.*)\.ZIP.*/.match(url)[1]}" : ''
   filenumber = uid_string[(22 - uid_string.size)]
-  "salesforce-#{uid_string}-#{datestamp}.ZIP"
+  return "salesforce-#{uid_string}-#{datestamp}.ZIP"
+end
+
+#string current date, each backup is named after the day it occured
+def current_date()
+  return Date.today.strftime('%Y-%m-%d')
 end
 
 ### Salesforce interactions ###
@@ -122,14 +128,14 @@ def get_download_size(login, url)
   data['Content-Length'].to_i
 end
 
-def download_file(login, url, expected_size)
+def download_file(login, url, expected_size, backup_directory)
   printing_interval = 10
   interval_type = :percentage
   last_printed_value = nil
   size = 0
   fn = file_name(url)
   puts "Downloading #{fn}..."
-  f = open("#{ENV['DATA_DIRECTORY']}/#{fn}", "wb")
+  f = open("#{backup_directory}/#{fn}", "wb")
   begin
     http.request_get(url, headers(login)) do |resp|
       resp.read_body do |segment|
@@ -195,18 +201,19 @@ def run_backup
     result = login
     timestamp_start = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     urls = download_index(result).split("\n")
+    backup_directory = "#{ENV['DATA_DIRECTORY']}/#{current_date()}"
     puts "#{timestamp_start}: Started!"
     puts "  All URLs:"
     puts urls
     puts ''
   
-    unless File.directory?(ENV['DATA_DIRECTORY'])
-      FileUtils.mkdir_p(ENV['DATA_DIRECTORY'])
+    unless File.directory?(current_date())
+      FileUtils.mkdir_p(current_date())
     end
   
     urls.each do |url|
       fn = file_name(url)
-      file_path = "#{ENV['DATA_DIRECTORY']}/#{fn}"
+      file_path = "#{backup_directory}/#{fn}"
       retry_count = 0
       begin
         puts "Working on: #{url}"
@@ -217,7 +224,7 @@ def run_backup
         if fs && fs == expected_size
           puts "File #{fn} exists and is the right size. Skipping."
         else
-          download_file(result, url, expected_size)
+          download_file(result, url, expected_size, backup_directory)
           ## email_success(file_path, expected_size)
         end
       rescue Exception => e
@@ -233,11 +240,18 @@ def run_backup
     end
   end
   
+  def delete_files()
+    #TODO
+    #for each folder check if it is RCLONE_RETENTION days older or more
+    #if so, delete that directory with all of the files for backup
   while true
     puts "started"
     run_backup
+    #TODO when backing up, make a new directory to put all the files in named after the date
+    #delete_files
     timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     puts "#{timestamp_done}: Done!"
     sleep(3600) #3600 seconds in an hour
+    #TODO sleep indefinitely until an email is sent with info that a new salesforce backup occured
   end
   
