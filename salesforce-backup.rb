@@ -145,7 +145,7 @@ def download_file(login, url, expected_size, backup_directory)
   size = 0
   fn = file_name(url)
   puts "Downloading #{fn}..."
-  f = open("#{backup_directory}/#{fn}", "wb")
+  f = open("#{backup_directory}#{fn}", "wb")
   begin
     http.request_get(url, headers(login)) do |resp|
       resp.read_body do |segment|
@@ -211,14 +211,14 @@ def run_backup
     result = login
     timestamp_start = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     urls = download_index(result).split("\n")
-    backup_directory = "#{ENV['DATA_DIRECTORY']}/#{current_date()}"
+    backup_directory = "#{ENV['DATA_DIRECTORY']}#{current_date()}"
     puts "#{timestamp_start}: Started!"
     puts "  All URLs:"
     puts urls
     puts ''
   
-    unless File.directory?("#{backup_directory}/")
-      FileUtils.mkdir_p("#{backup_directory}/")
+    unless File.directory?("/#{backup_directory}/")
+      FileUtils.mkdir_p("/#{backup_directory}/")
       puts backup_directory
       puts 'directory made'
     end
@@ -232,7 +232,7 @@ def run_backup
     end
     urls.each do |url|
       fn = file_name(url)
-      file_path = "#{backup_directory}/#{fn}"
+      file_path = "#{backup_directory}#{fn}"
       retry_count = 0
       begin
         puts "Working on: #{url}"
