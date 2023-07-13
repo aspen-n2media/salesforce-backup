@@ -225,7 +225,7 @@ def run_backup
 
     File.open(file_path, 'w') do |file|
       file.write("This is a Salesforce backup file.")
-
+    end
     urls.each do |url|
       fn = file_name(url)
       file_path = "#{backup_directory}/#{fn}"
