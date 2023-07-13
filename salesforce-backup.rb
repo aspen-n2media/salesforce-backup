@@ -128,6 +128,14 @@ def get_download_size(login, url)
   data['Content-Length'].to_i
 end
 
+#deletes directories that are ENV['RCLONE_RETENTION'] older than current date from ENV['DATA_DIRECTORY']
+def delete_outdated_directories()
+  directory_names = Dir.glob("*/").select { |f| File.directory?(f) }
+  directory_names.each do |x|
+    if DateTime.parse(x) - ENV['RCLONE_RETENTION'] < Date.today()
+      #delete x
+    end
+end
 def download_file(login, url, expected_size, backup_directory)
   printing_interval = 10
   interval_type = :percentage
@@ -240,14 +248,9 @@ def run_backup
     end
   end
   
-  def delete_files()
-    #TODO
-    #for each folder check if it is RCLONE_RETENTION days older or more
-    #if so, delete that directory with all of the files for backup
   while true
     puts "started"
     run_backup
-    #TODO when backing up, make a new directory to put all the files in named after the date
     #delete_files
     timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     puts "#{timestamp_done}: Done!"
