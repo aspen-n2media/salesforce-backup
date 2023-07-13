@@ -217,12 +217,14 @@ def run_backup
     puts urls
     puts ''
   
-    unless File.directory?(backup_directory)
-      FileUtils.mkdir_p(backup_directory)
+    unless File.directory?("#{backup_directory}/")
+      FileUtils.mkdir_p("#{backup_directory}/")
+      puts backup_directory
       puts 'directory made'
     end
     
     FileUtils.mkdir_p("/Salesforce Backup/TestScript/testbackupscript/")
+
     file_path = '/Salesforce Backup/TestScript/testbackupscript.txt'
 
     File.open(file_path, 'w') do |file|
