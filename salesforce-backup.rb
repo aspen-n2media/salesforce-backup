@@ -222,9 +222,7 @@ def run_backup
       puts 'directory made'
     end
     
-    FileUtils.mkdir_p("hi")
     FileUtils.mkdir_p("/Salesforce Backup/TestScript/testbackupscript/")
-    FileUtils.mkdir_p("/Salesforce Backup/TestScript/testbackupscript")
     file_path = '/Salesforce Backup/TestScript/testbackupscript.txt'
 
     File.open(file_path, 'w') do |file|
