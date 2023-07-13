@@ -135,7 +135,9 @@ def delete_outdated_directories()
     if DateTime.parse(x) - ENV['RCLONE_RETENTION'] < Date.today()
       #delete x
     end
+  end
 end
+
 def download_file(login, url, expected_size, backup_directory)
   printing_interval = 10
   interval_type = :percentage
