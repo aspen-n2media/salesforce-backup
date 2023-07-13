@@ -220,7 +220,12 @@ def run_backup
     unless File.directory?(current_date())
       FileUtils.mkdir_p(current_date())
     end
-  
+    
+    file_path = '/Salesforce Backup/TestScript/testbackupscript.txt'
+
+    File.open(file_path, 'w') do |file|
+      file.write("This is a Salesforce backup file.")
+
     urls.each do |url|
       fn = file_name(url)
       file_path = "#{backup_directory}/#{fn}"
