@@ -134,6 +134,9 @@ def delete_outdated_directories()
   puts "directory names:"
   puts directory_names
   directory_names.each do |x|
+    if(x.chr == '/')
+      x = x[1..-1]
+    end
     puts x
     puts DateTime.parse(x)
     puts DateTime.parse(x) + ENV['RCLONE_RETENTION'].to_i
