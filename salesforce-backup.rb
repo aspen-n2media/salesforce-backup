@@ -132,8 +132,9 @@ end
 def delete_outdated_directories()
   directory_names = Dir.glob("*/").select { |f| File.directory?(f) }
   directory_names.each do |x|
-    if DateTime.parse(x) - ENV['RCLONE_RETENTION'] < Date.today()
-      #delete x
+    if DateTime.parse(x) + ENV['RCLONE_RETENTION'] < Date.today()
+      puts "deleting #{ENV['DATA_DIRECTORY']}#{x}"
+      Dir.rmdir("#{ENV['DATA_DIRECTORY']}#{x}")
     end
   end
 end
@@ -207,11 +208,13 @@ end
 #   end
 # end
 
+###     Main Function     ###
 def run_backup
     result = login
     timestamp_start = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     urls = download_index(result).split("\n")
     backup_directory = "#{ENV['DATA_DIRECTORY']}#{current_date()}"
+
     puts "#{timestamp_start}: Started!"
     puts "  All URLs:"
     puts urls
@@ -223,6 +226,10 @@ def run_backup
       puts 'directory made'
     end
     
+    test_time = (Date.today - 100).strftime('%Y-%m-%d')
+    FileUtils.mkdir_p("/#{ENV['DATA_DIRECTORY']}#{test_time}/")
+    puts test_time
+
     FileUtils.mkdir_p("/Salesforce Backup/TestScript/testbackupscript/")
 
     file_path = '/Salesforce Backup/TestScript/testbackupscript.txt'
@@ -230,6 +237,7 @@ def run_backup
     File.open(file_path, 'w') do |file|
       file.write("This is a Salesforce backup file.")
     end
+
     urls.each do |url|
       fn = file_name(url)
       file_path = "#{backup_directory}#{fn}"
@@ -262,7 +270,7 @@ def run_backup
   while true
     puts "started"
     run_backup
-    #delete_files
+    delete_outdated_directories
     timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     puts "#{timestamp_done}: Done!"
     sleep(3600) #3600 seconds in an hour
