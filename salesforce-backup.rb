@@ -131,9 +131,10 @@ end
 #deletes directories that are ENV['RCLONE_RETENTION'] older than current date from ENV['DATA_DIRECTORY']
 def delete_outdated_directories()
   directory_names = Dir.glob("#{ENV['DATA_DIRECTORY']}*/").select { |f| File.directory?(f) }
+  subdirectory_names = directory_names.map { |d| File.basename(d) }
   puts "directory names:"
-  puts directory_names
-  directory_names.each do |x|
+  puts subdirectory_names
+  subdirectory_names.each do |x|
     if(x.chr == '/')
       x = x[1..-1]
     end
