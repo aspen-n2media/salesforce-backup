@@ -132,19 +132,12 @@ end
 def delete_outdated_directories()
   directory_names = Dir.glob("#{ENV['DATA_DIRECTORY']}*/").select { |f| File.directory?(f) }
   subdirectory_names = directory_names.map { |d| File.basename(d) }
-  puts "directory names:"
-  puts subdirectory_names
   subdirectory_names.each do |x|
     if(x.chr == '/')
       x = x[1..-1]
     end
-    puts x
-    puts DateTime.parse(x)
-    puts DateTime.parse(x) + ENV['RCLONE_RETENTION'].to_i
-    puts Date.today()
-    puts DateTime.parse(x) + ENV['RCLONE_RETENTION'].to_i < Date.today()
     if DateTime.parse(x) + ENV['RCLONE_RETENTION'].to_i < Date.today()
-      puts "deleting #{ENV['DATA_DIRECTORY']}#{x}"
+      puts "deleted sub-directory: #{ENV['DATA_DIRECTORY']}#{x}"
       Dir.rmdir("#{ENV['DATA_DIRECTORY']}#{x}")
     end
   end
@@ -233,20 +226,7 @@ def run_backup
   
     unless File.directory?("/#{backup_directory}/")
       FileUtils.mkdir_p("/#{backup_directory}/")
-      puts backup_directory
-      puts 'directory made'
-    end
-    
-    test_time = (Date.today - 100).strftime('%Y-%m-%d')
-    FileUtils.mkdir_p("/#{ENV['DATA_DIRECTORY']}#{test_time}/")
-    puts test_time
-
-    FileUtils.mkdir_p("/Salesforce Backup/TestScript/testbackupscript/")
-
-    file_path = '/Salesforce Backup/TestScript/testbackupscript.txt'
-
-    File.open(file_path, 'w') do |file|
-      file.write("This is a Salesforce backup file.")
+      puts "Created new backup directory: #{backup_directory}"
     end
 
     urls.each do |url|
