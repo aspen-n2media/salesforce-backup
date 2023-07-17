@@ -136,11 +136,17 @@ def delete_outdated_directories()
     if(x.chr == '/')
       x = x[1..-1]
     end
-    if DateTime.parse(x) + ENV['RCLONE_RETENTION'].to_i < Date.today()
-      puts "deleted sub-directory: #{ENV['DATA_DIRECTORY']}#{x}"
-      Dir.rmdir("#{ENV['DATA_DIRECTORY']}#{x}")
+
+    puts(x)
+    if x.respond_to?(:strftime)
+      if DateTime.parse(x) + ENV['RCLONE_RETENTION'].to_i < Date.today()
+        puts "deleted sub-directory: #{ENV['DATA_DIRECTORY']}#{x}"
+        Dir.rmdir("#{ENV['DATA_DIRECTORY']}#{x}")
+      end
+    else
+      puts(x)
+      puts "was not a date"
     end
-  end
 end
 
 def download_file(login, url, expected_size, backup_directory)
@@ -217,15 +223,15 @@ def run_backup
     result = login
     timestamp_start = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     urls = download_index(result).split("\n")
-    backup_directory = "#{ENV['DATA_DIRECTORY']}#{current_date()}"
+    backup_directory = "#{ENV['DATA_DIRECTORY']}#{current_date()}/"
 
     puts "#{timestamp_start}: Started!"
     puts "  All URLs:"
     puts urls
     puts ''
   
-    unless File.directory?("/#{backup_directory}/")
-      FileUtils.mkdir_p("/#{backup_directory}/")
+    unless File.directory?("#{backup_directory}")
+      FileUtils.mkdir_p("#{backup_directory}")
       puts "Created new backup directory: #{backup_directory}"
     end
 
