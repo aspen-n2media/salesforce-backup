@@ -147,6 +147,7 @@ def delete_outdated_directories()
       puts(x)
       puts "was not a date"
     end
+  end
 end
 
 def download_file(login, url, expected_size, backup_directory)
