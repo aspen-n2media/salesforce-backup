@@ -138,7 +138,7 @@ def delete_outdated_directories()
     end
 
     puts(x)
-    if x.respond_to?(:strftime)
+    if DateTime.parse(x).respond_to?(:strftime)
       if DateTime.parse(x) + ENV['RCLONE_RETENTION'].to_i < Date.today()
         puts "deleted sub-directory: #{ENV['DATA_DIRECTORY']}#{x}"
         Dir.rmdir("#{ENV['DATA_DIRECTORY']}#{x}")
