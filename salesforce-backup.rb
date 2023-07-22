@@ -152,7 +152,7 @@ end
 
 def data_export_exists()
   puts "checking if export exists"
-  return !(download_index(login).split("\n") == [])
+  return !(download_index(login()).split("\n") == [])
 end
 
 def download_file(login, url, expected_size, backup_directory)
@@ -280,7 +280,7 @@ def run_backup
 
     #Data exists! Run Backup.
     puts "started"
-    puts download_index(result)
+    puts download_index(login())
     run_backup
     delete_outdated_directories
     timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
