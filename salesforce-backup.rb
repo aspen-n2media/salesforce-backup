@@ -151,7 +151,8 @@ def delete_outdated_directories()
 end
 
 def data_export_exists()
-  !(download_index(login).split("\n") == [])
+  puts "checking if export exists"
+  return !(download_index(login).split("\n") == [])
 end
 
 def download_file(login, url, expected_size, backup_directory)
@@ -271,7 +272,7 @@ def run_backup
   
   #initialized based on current salesforce data
   while true
-
+    puts "Waiting for backup to start"
     #Wait for data indicating next backup
     while(!(data_export_exists()))
       sleep(360) #query every hour
@@ -279,6 +280,7 @@ def run_backup
 
     #Data exists! Run Backup.
     puts "started"
+    puts download_index(result)
     run_backup
     delete_outdated_directories
     timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
