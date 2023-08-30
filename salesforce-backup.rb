@@ -275,7 +275,7 @@ def run_backup
     puts "Waiting for backup to start"
     #Wait for data indicating next backup
     while(!(data_export_exists()))
-      sleep(360) #query every hour``
+      sleep(360) #query every hour
     end
 
     #Data exists! Run Backup.
