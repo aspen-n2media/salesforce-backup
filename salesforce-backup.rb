@@ -275,7 +275,7 @@ def run_backup
     puts "Waiting for backup to start"
     #Wait for data indicating next backup
     while(!(data_export_exists()))
-      sleep(360) #query every hour
+      sleep(360) #query every hour``
     end
 
     #Data exists! Run Backup.
@@ -286,7 +286,7 @@ def run_backup
     timestamp_done = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
     puts "#{timestamp_done}: Done!"
     
-    #Wait for current backup to disapear
+    #Wait for current backup to disapea
     while(data_export_exists())
       sleep(360)
     end
